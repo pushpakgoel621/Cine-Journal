@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { middlewareAuth as auth } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
 
 export const proxy = auth((req) => {
