@@ -18,6 +18,8 @@ model User {
   email       String   @unique
   password    String? // Null for OAuth-only users
   displayName String
+  image       String?  // Avatar image from OAuth or Cloudinary
+  coverImage  String?  // Facebook-style background banner
   preferences Json     @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

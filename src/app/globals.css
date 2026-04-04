@@ -732,7 +732,260 @@ img {
 }
 
 /* ==========================================================================
-   Toast Notifications
+   Phase 4: Stats & Profile & Actions
+   ========================================================================== */
+
+/* Dashboard Stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-bounce), box-shadow var(--transition-smooth);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  background: rgba(var(--primary-rgb), 0.1);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--primary);
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* MovieCard Actions */
+.movie-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto; /* Push to bottom */
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  width: 100%;
+}
+
+.icon-btn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.edit-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  background: var(--error);
+  color: white;
+  border-color: var(--error);
+  transform: scale(1.1);
+}
+
+/* Profile Page */
+.profile-page {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.profile-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.profile-banner-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background-color: var(--surface-hover);
+}
+
+.profile-cover {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-hover);
+  position: relative;
+}
+
+.profile-cover-skeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.upload-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.upload-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.hidden-input {
+  display: none;
+}
+
+.cover-upload-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.profile-avatar-wrapper {
+  position: absolute;
+  bottom: -40px;
+  left: 2rem;
+  z-index: 10;
+}
+
+.profile-avatar-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--surface);
+  background: var(--background);
+  box-shadow: var(--shadow-md);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-skeleton {
+  width: 120px;
+  height: 120px;
+  border: 4px solid var(--surface);
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0.4rem;
+  border-radius: 50%;
+}
+
+.profile-content {
+  padding: 4rem 2rem 2rem 2rem;
+}
+
+.profile-content h2 {
+  font-size: 1.75rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.profile-email {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.profile-form {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-save-btn {
+  align-self: flex-start;
+}
+
+/* Custom Poster Upload */
+.poster-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.poster-upload-btn {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.poster-upload-btn:hover {
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* ==========================================================================
+   Responsive (Mobile Firstish... Desktop Adjustments)
    ========================================================================== */
 
 .toast-container {

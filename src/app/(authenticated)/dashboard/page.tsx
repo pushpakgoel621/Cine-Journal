@@ -19,16 +19,40 @@ async function getHallOfFame(userId: string) {
   });
 }
 
+async function getStats(userId: string) {
+  const [totalWatched, ratingStats, genreGroup] = await Promise.all([
+    prisma.watchLog.count({ where: { userId, watchStatus: "WATCHED" } }),
+    prisma.watchLog.aggregate({
+      where: { userId, watchStatus: "WATCHED", rating: { not: null } },
+      _avg: { rating: true },
+    }),
+    prisma.watchLog.groupBy({
+      by: ["genre"],
+      where: { userId, genre: { not: null } },
+      _count: { genre: true },
+      orderBy: { _count: { genre: "desc" } },
+      take: 1,
+    }),
+  ]);
+
+  return {
+    totalWatched,
+    avgRating: ratingStats._avg.rating ? ratingStats._avg.rating.toFixed(1) : "N/A",
+    topGenre: genreGroup[0]?.genre || "N/A",
+  };
+}
+
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [reminders, hallOfFame] = userId
+  const [reminders, hallOfFame, stats] = userId
     ? await Promise.all([
         getWatchlistReminders(userId),
         getHallOfFame(userId),
+        getStats(userId),
       ])
-    : [[], []];
+    : [[], [], { totalWatched: 0, avgRating: "N/A", topGenre: "N/A" }];
 
   return (
     <div className="dashboard">
@@ -38,6 +62,31 @@ export default async function DashboardPage() {
           Your personal movie journal awaits
         </p>
       </header>
+
+      {/* User Stats Widget */}
+      <section className="dashboard-stats fade-in">
+        <div className="stat-card">
+          <span className="stat-icon">✅</span>
+          <div className="stat-content">
+            <span className="stat-label">Watched</span>
+            <span className="stat-value">{stats.totalWatched}</span>
+          </div>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon">⭐</span>
+          <div className="stat-content">
+            <span className="stat-label">Avg Rating</span>
+            <span className="stat-value">{stats.avgRating}</span>
+          </div>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon">🎭</span>
+          <div className="stat-content">
+            <span className="stat-label">Top Genre</span>
+            <span className="stat-value">{stats.topGenre}</span>
+          </div>
+        </div>
+      </section>
 
       {/* Watchlist Reminders */}
       <section className="dashboard-section">

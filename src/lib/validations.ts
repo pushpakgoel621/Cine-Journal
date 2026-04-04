@@ -34,7 +34,19 @@ export const WatchLogCreateSchema = z.object({
 
 export const WatchLogUpdateSchema = WatchLogCreateSchema.partial();
 
+export const ProfileUpdateSchema = z.object({
+  displayName: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters")
+    .trim()
+    .optional(),
+  image: z.string().url().optional().nullable(),
+  coverImage: z.string().url().optional().nullable(),
+});
+
 export type SignupInput = z.infer<typeof SignupSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type WatchLogCreateInput = z.infer<typeof WatchLogCreateSchema>;
 export type WatchLogUpdateInput = z.infer<typeof WatchLogUpdateSchema>;
+export type ProfileUpdateInput = z.infer<typeof ProfileUpdateSchema>;

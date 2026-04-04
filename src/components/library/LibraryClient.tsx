@@ -3,9 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import MovieCard from "@/components/library/MovieCard";
 import { GridSkeleton } from "@/components/Skeleton";
+import AddEntryForm, { WatchLogData } from "@/components/logging/AddEntryForm";
+import { useToast } from "@/components/Toast";
 
 interface WatchLog {
   id: string;
+  tmdbId: number | null;
   title: string;
   posterUrl: string | null;
   rating: number | null;
@@ -13,7 +16,8 @@ interface WatchLog {
   platform: string | null;
   watchedAt: string | null;
   genre: string | null;
-  watchStatus: string;
+  reviewText: string | null;
+  watchStatus: "WATCHED" | "TO_WATCH";
 }
 
 const PLATFORMS = [
@@ -31,6 +35,8 @@ export default function LibraryClient() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [editingLog, setEditingLog] = useState<WatchLogData | null>(null);
+  const { addToast } = useToast();
 
   // Filters
   const [status, setStatus] = useState("");
@@ -99,6 +105,25 @@ export default function LibraryClient() {
       if (el) observer.unobserve(el);
     };
   }, [nextCursor, isLoadingMore, fetchLogs]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/watchlogs/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete");
+      setLogs((prev) => prev.filter((log) => log.id !== id));
+      addToast("Entry deleted successfully", "success");
+    } catch {
+      addToast("Failed to delete entry", "error");
+    }
+  };
+
+  const handleEditSuccess = () => {
+    setEditingLog(null);
+    fetchLogs().then((result) => {
+      setLogs(result.data || []);
+      setNextCursor(result.nextCursor);
+    });
+  };
 
   return (
     <div className="library">
@@ -203,7 +228,11 @@ export default function LibraryClient() {
                 platform={log.platform}
                 watchedAt={log.watchedAt}
                 genre={log.genre}
+                reviewText={log.reviewText}
                 watchStatus={log.watchStatus}
+                tmdbId={log.tmdbId}
+                onEdit={() => setEditingLog(log)}
+                onDelete={() => handleDelete(log.id)}
               />
             ))}
           </div>
@@ -224,6 +253,19 @@ export default function LibraryClient() {
               ? "No movies match your filters."
               : "Your library is empty. Start logging movies to see them here!"}
           </p>
+        </div>
+      )}
+
+      {/* Edit Modal Overlay */}
+      {editingLog && (
+        <div className="fab-backdrop visible" onClick={() => setEditingLog(null)}>
+          <div className="fab-drawer open" onClick={(e) => e.stopPropagation()}>
+            <AddEntryForm 
+              initialData={editingLog}
+              onCancel={() => setEditingLog(null)}
+              onSuccess={handleEditSuccess}
+            />
+          </div>
         </div>
       )}
     </div>

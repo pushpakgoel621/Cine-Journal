@@ -4,6 +4,7 @@ import { useState } from "react";
 
 interface MovieCardProps {
   id: string;
+  tmdbId: number | null;
   title: string;
   posterUrl: string | null;
   rating: number | null;
@@ -11,10 +12,15 @@ interface MovieCardProps {
   platform: string | null;
   watchedAt: string | null;
   genre: string | null;
-  watchStatus: string;
+  reviewText: string | null;
+  watchStatus: "WATCHED" | "TO_WATCH";
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function MovieCard({
+  // Desctructure all but keep in an object so we can pass it easily if needed, or just keep individual args
+  id,
   title,
   posterUrl,
   rating,
@@ -23,6 +29,8 @@ export default function MovieCard({
   watchedAt,
   genre,
   watchStatus,
+  onEdit,
+  onDelete,
 }: MovieCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -98,6 +106,23 @@ export default function MovieCard({
               📅 {new Date(watchedAt).toLocaleDateString()}
             </span>
           )}
+
+          <div className="movie-card-actions" onClick={(e) => e.stopPropagation()}>
+            {onEdit && (
+              <button className="icon-btn edit-btn" onClick={onEdit} title="Edit Entry">
+                ✏️
+              </button>
+            )}
+            {onDelete && (
+              <button className="icon-btn delete-btn" onClick={() => {
+                if (window.confirm("Are you sure you want to delete this entry?")) {
+                  onDelete();
+                }
+              }} title="Delete Entry">
+                🗑️
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
