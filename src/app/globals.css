@@ -732,6 +732,21 @@ img {
 }
 
 /* ==========================================================================
+   Modal Content
+   ========================================================================== */
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1100;
+}
+
+/* ==========================================================================
    Phase 4: Stats & Profile & Actions
    ========================================================================== */
 

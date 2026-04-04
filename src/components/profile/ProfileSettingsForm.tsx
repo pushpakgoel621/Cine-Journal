@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/Skeleton";
 type ProfileData = {
   id: string;
   displayName: string;
+  username: string | null;
   email: string;
   image: string | null;
   coverImage: string | null;
@@ -15,6 +16,7 @@ type ProfileData = {
 
 export default function ProfileSettingsForm({ user }: { user: ProfileData }) {
   const [displayName, setDisplayName] = useState(user.displayName);
+  const [username, setUsername] = useState(user.username || "");
   const [image, setImage] = useState(user.image || "");
   const [coverImage, setCoverImage] = useState(user.coverImage || "");
   
@@ -69,7 +71,7 @@ export default function ProfileSettingsForm({ user }: { user: ProfileData }) {
       const res = await fetch("/api/user/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName, image, coverImage }),
+        body: JSON.stringify({ displayName, username: username || null, image, coverImage }),
       });
 
       const data = await res.json();
@@ -163,6 +165,20 @@ export default function ProfileSettingsForm({ user }: { user: ProfileData }) {
               required
               minLength={2}
               maxLength={50}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="username">Username (@)</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+              placeholder="Unique handle (e.g. jondoe)"
+              className="form-input"
+              minLength={3}
+              maxLength={20}
             />
           </div>
 

@@ -18,17 +18,49 @@ model User {
   email       String   @unique
   password    String? // Null for OAuth-only users
   displayName String
+  username    String?  @unique
   image       String?  // Avatar image from OAuth or Cloudinary
   coverImage  String?  // Facebook-style background banner
   preferences Json     @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  watchLogs WatchLog[]
-  accounts  Account[]
-  sessions  Session[]
+  watchLogs   WatchLog[]
+  accounts    Account[]
+  sessions    Session[]
+  collections Collection[]
 
   @@map("users")
+}
+
+model Collection {
+  id          String     @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  isPublic    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CollectionItem[]
+
+  @@index([userId])
+  @@map("collections")
+}
+
+model CollectionItem {
+  id           String   @id @default(cuid())
+  collectionId String
+  watchLogId   String
+  order        Int?
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  watchLog   WatchLog   @relation(fields: [watchLogId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, watchLogId])
+  @@index([collectionId])
+  @@map("collection_items")
 }
 
 model Account {
@@ -87,7 +119,8 @@ model WatchLog {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CollectionItem[]
 
   @@index([userId])
   @@index([tmdbId])

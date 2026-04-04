@@ -38,6 +38,10 @@ export default async function AuthenticatedLayout({
             <span className="sidebar-icon">📚</span>
             <span>Library</span>
           </Link>
+          <Link href="/my-list" className="sidebar-link">
+            <span className="sidebar-icon">📋</span>
+            <span>My Lists</span>
+          </Link>
           <Link href="/profile" className="sidebar-link">
             <span className="sidebar-icon">👤</span>
             <span>Profile</span>
@@ -83,6 +87,10 @@ export default async function AuthenticatedLayout({
         <Link href="/library" className="bottom-nav-link">
           <span className="bottom-nav-icon">📚</span>
           <span>Library</span>
+        </Link>
+        <Link href="/my-list" className="bottom-nav-link">
+          <span className="bottom-nav-icon">📋</span>
+          <span>Lists</span>
         </Link>
         <Link href="/profile" className="bottom-nav-link">
           <span className="bottom-nav-icon">👤</span>

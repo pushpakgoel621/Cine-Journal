@@ -30,12 +30,13 @@ const EMOTIONS = [
   "Suspenseful", "Comforting", "Disturbing", "Inspiring", "Hilarious",
 ];
 
-export default function LibraryClient() {
+export default function LibraryClient({ collections = [] }: { collections?: { id: string; title: string }[] }) {
   const [logs, setLogs] = useState<WatchLog[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [editingLog, setEditingLog] = useState<WatchLogData | null>(null);
+  const [toListLogId, setToListLogId] = useState<string | null>(null);
   const { addToast } = useToast();
 
   // Filters
@@ -123,6 +124,28 @@ export default function LibraryClient() {
       setLogs(result.data || []);
       setNextCursor(result.nextCursor);
     });
+  };
+
+  const handleAddToList = async (collectionId: string) => {
+    if (!toListLogId) return;
+    try {
+      const res = await fetch(`/api/collections/${collectionId}/items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ watchLogId: toListLogId })
+      });
+      if (res.status === 409) {
+        addToast("Movie is already in this list", "error");
+      } else if (!res.ok) {
+        throw new Error("Failed to add to list");
+      } else {
+        addToast("Added to list successfully!", "success");
+      }
+    } catch {
+      addToast("Failed to add to list", "error");
+    } finally {
+      setToListLogId(null);
+    }
   };
 
   return (
@@ -233,6 +256,7 @@ export default function LibraryClient() {
                 tmdbId={log.tmdbId}
                 onEdit={() => setEditingLog(log)}
                 onDelete={() => handleDelete(log.id)}
+                onAddToList={() => setToListLogId(log.id)}
               />
             ))}
           </div>
@@ -265,6 +289,34 @@ export default function LibraryClient() {
               onCancel={() => setEditingLog(null)}
               onSuccess={handleEditSuccess}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Add To List Modal */}
+      {toListLogId && (
+        <div className="fab-backdrop visible" onClick={() => setToListLogId(null)}>
+          <div className="modal-content fade-in" onClick={(e) => e.stopPropagation()}>
+            <h3>Add to List</h3>
+            {collections.length === 0 ? (
+              <p>You haven't created any lists yet!</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+                {collections.map(c => (
+                  <button 
+                    key={c.id} 
+                    className="btn btn-secondary" 
+                    onClick={() => handleAddToList(c.id)}
+                    style={{ textAlign: 'left', display: 'block', width: '100%' }}
+                  >
+                    📋 {c.title}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button className="btn btn-secondary" style={{ marginTop: '1rem', width: '100%' }} onClick={() => setToListLogId(null)}>
+              Cancel
+            </button>
           </div>
         </div>
       )}

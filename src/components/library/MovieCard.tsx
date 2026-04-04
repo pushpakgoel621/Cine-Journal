@@ -16,6 +16,7 @@ interface MovieCardProps {
   watchStatus: "WATCHED" | "TO_WATCH";
   onEdit?: () => void;
   onDelete?: () => void;
+  onAddToList?: () => void;
 }
 
 export default function MovieCard({
@@ -31,6 +32,7 @@ export default function MovieCard({
   watchStatus,
   onEdit,
   onDelete,
+  onAddToList,
 }: MovieCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -108,8 +110,17 @@ export default function MovieCard({
           )}
 
           <div className="movie-card-actions" onClick={(e) => e.stopPropagation()}>
+            {onAddToList && (
+              <button 
+                className="icon-btn list-btn" 
+                onClick={(e) => { e.stopPropagation(); onAddToList(); }}
+                title="Add to List"
+              >
+                📋
+              </button>
+            )}
             {onEdit && (
-              <button className="icon-btn edit-btn" onClick={onEdit} title="Edit Entry">
+              <button className="icon-btn edit-btn" onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Edit Entry">
                 ✏️
               </button>
             )}

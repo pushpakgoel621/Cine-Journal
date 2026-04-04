@@ -24,13 +24,29 @@ export async function PUT(request: NextRequest) {
     );
   }
 
+  const { username, ...restData } = validated.data;
+
   try {
+    if (username) {
+      const existingUser = await prisma.user.findUnique({
+        where: { username },
+      });
+
+      if (existingUser && existingUser.id !== session.user.id) {
+        return NextResponse.json(
+          { error: "Username is already taken" },
+          { status: 409 }
+        );
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: validated.data,
+      data: { ...restData, username },
       select: {
         id: true,
         displayName: true,
+        username: true,
         email: true,
         image: true,
         coverImage: true,
